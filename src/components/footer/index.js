@@ -1,16 +1,18 @@
 import React from "react";
 import Link from "../link";
 import styles from "./index.module.css";
+import logo from "../../images/blue-origami-bird-flipped.png";
+import getNavigation from "../../utils/navigation";
 
 const Footer = () => {
+  const links = getNavigation();
   return (
     <footer>
       <div className={styles.footer}>
-        <Link href="#" title="Going to 1" type="footer" />
-        <Link href="#" title="Going to 2" type="footer" />
-        <Link href="#" title="Going to 3" type="footer" />
-        <Link href="#" title="Going to 4" type="footer" />
-        <Link href="#" title="Going to 5" type="footer" />
+        {links.map((nav) => {
+          return <Link href={nav.link} title={nav.title} type="footer"></Link>;
+        })}
+        <img className={styles.logo} src={logo}></img>
       </div>
       <p className={styles.uni}>Software University</p>
     </footer>
