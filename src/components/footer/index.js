@@ -10,7 +10,14 @@ const Footer = () => {
     <footer>
       <div className={styles.footer}>
         {links.map((nav) => {
-          return <Link href={nav.link} title={nav.title} type="footer"></Link>;
+          return (
+            <Link
+              key={nav.title}
+              href={nav.link}
+              title={nav.title}
+              type="footer"
+            ></Link>
+          );
         })}
         <img className={styles.logo} src={logo}></img>
       </div>

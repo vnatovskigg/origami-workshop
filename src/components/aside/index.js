@@ -8,7 +8,14 @@ const Aside = () => {
   return (
     <aside className={styles.container}>
       {links.map((nav) => {
-        return <Link href={nav.link} title={nav.title} type="aside"></Link>;
+        return (
+          <Link
+            key={nav.title}
+            href={nav.link}
+            title={nav.title}
+            type="aside"
+          ></Link>
+        );
       })}
     </aside>
   );
