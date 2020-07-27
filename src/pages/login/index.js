@@ -4,45 +4,68 @@ import SubmitButton from "../../components/button/submit-button";
 import styles from "./index.module.css";
 import PageWrapper from "../../components/page-wrapper";
 import Input from "../../components/input";
+import authenticate from "../../utils/authenticate";
 
 class Login extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      email: "",
+      username: "",
       password: "",
     };
   }
 
-  onChange = (event, type) => {
+  handleChange = (event, type) => {
     const newState = {};
     newState[type] = event.target.value;
 
     this.setState(newState);
   };
 
+  handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const { username, password } = this.state;
+
+    await authenticate(
+      "http://localhost:9999/api/user/login",
+      {
+        username,
+        password,
+      },
+      () => {
+        console.log("Success");
+        this.props.history("/");
+      },
+      (e) => {
+        console.log("Error", e);
+      }
+    );
+  };
+
   render() {
-    const { email, password } = this.state;
+    const { username, password } = this.state;
     return (
       <PageWrapper>
-        <div className={styles.container}>
+        <form className={styles.container} onSubmit={this.handleSubmit}>
           <Title title="Login" />
           <Input
-            value={email}
-            onChange={(e) => this.onChange(e, "email")}
-            label="Email"
-            id="email"
+            value={username}
+            onChange={(e) => this.handleChange(e, "username")}
+            label="Username"
+            id="username"
           />
           <Input
+            type="password"
             value={password}
-            onChange={(e) => this.onChange(e, "password")}
+            onChange={(e) => this.handleChange(e, "password")}
             label="Password"
             id="email"
           />
 
           <SubmitButton text="Login" />
-        </div>
+        </form>
       </PageWrapper>
     );
   }
