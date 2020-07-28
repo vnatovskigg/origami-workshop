@@ -5,6 +5,7 @@ import styles from "./index.module.css";
 import PageWrapper from "../../components/page-wrapper";
 import Input from "../../components/input";
 import authenticate from "../../utils/authenticate";
+import UserContext from "../../Context";
 
 class Login extends Component {
   constructor(props) {
@@ -15,6 +16,8 @@ class Login extends Component {
       password: "",
     };
   }
+
+  static contextType = UserContext;
 
   handleChange = (event, type) => {
     const newState = {};
@@ -34,9 +37,10 @@ class Login extends Component {
         username,
         password,
       },
-      () => {
+      (user) => {
         console.log("Success");
-        this.props.history("/");
+        this.context.logIn(user);
+        this.props.history.push("/");
       },
       (e) => {
         console.log("Error", e);
