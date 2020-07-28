@@ -5,6 +5,7 @@ import styles from "./index.module.css";
 import PageWrapper from "../../components/page-wrapper";
 import Input from "../../components/input";
 import authenticate from "../../utils/authenticate";
+import UserContext from "../../Context";
 
 class Register extends Component {
   constructor(props) {
@@ -24,6 +25,8 @@ class Register extends Component {
     this.setState(newState);
   };
 
+  static contextType = UserContext;
+
   handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -35,8 +38,9 @@ class Register extends Component {
         username,
         password,
       },
-      () => {
+      (user) => {
         console.log("Success");
+        this.context.logIn(user);
         this.props.history.push("/");
       },
       (e) => {
