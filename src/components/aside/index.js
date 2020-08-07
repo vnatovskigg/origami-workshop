@@ -8,9 +8,9 @@ class Aside extends Component {
   static contextType = UserContext;
 
   render() {
-    const { loggedIn, user } = this.context;
+    const { user } = this.context;
 
-    const links = getNavigation(loggedIn, user);
+    const links = getNavigation(user);
 
     return (
       <aside className={styles.container}>

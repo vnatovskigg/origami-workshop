@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import UserContext from "./Context";
 
 function getCookie(name) {
@@ -6,46 +6,37 @@ function getCookie(name) {
   return cookieValue ? cookieValue[2] : null;
 }
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+const App = (props) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    this.state = {
-      loggedIn: null,
-      user: null,
-    };
-  }
-
-  logIn = (user) => {
-    this.setState({
+  const logIn = (user) => {
+    setUser({
+      ...user,
       loggedIn: true,
-      user,
     });
   };
 
-  logOut = () => {
+  const logOut = () => {
     document.cookie = "x-auth-token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
-    this.setState({
+    setUser({
       loggedIn: false,
-      user: null,
     });
   };
 
-  componentDidMount() {
+  useEffect(() => {
     const token = getCookie("x-auth-token");
 
     if (!token) {
-      this.logOut();
+      logOut();
       return;
     }
 
     fetch("http://localhost:9999/api/user/verify", {
-      method: "POST",
-      body: JSON.stringify({
-        token,
-      }),
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: token,
       },
     })
       .then((promise) => {
@@ -53,36 +44,28 @@ class App extends Component {
       })
       .then((res) => {
         if (res.status) {
-          this.logIn({
+          logIn({
             username: res.user.username,
             id: res.user._id,
           });
         } else {
-          this.logOut();
+          logOut();
         }
+        setLoading(false);
       });
-  }
+  }, []);
 
-  render() {
-    const { loggedIn, user } = this.state;
-
-    if (loggedIn === null) {
-      return <div>Loading...</div>;
-    }
-
-    return (
-      <UserContext.Provider
-        value={{
-          loggedIn,
-          user,
-          logIn: this.logIn,
-          logOut: this.logOut,
-        }}
-      >
-        {this.props.children}
-      </UserContext.Provider>
-    );
-  }
-}
+  return (
+    <UserContext.Provider
+      value={{
+        user,
+        logIn,
+        logOut,
+      }}
+    >
+      {props.children}
+    </UserContext.Provider>
+  );
+};
 
 export default App;

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useContext } from "react";
 import Title from "../../components/title";
 import SubmitButton from "../../components/button/submit-button";
 import styles from "./index.module.css";
@@ -6,31 +6,31 @@ import PageWrapper from "../../components/page-wrapper";
 import Input from "../../components/input";
 import authenticate from "../../utils/authenticate";
 import UserContext from "../../Context";
+import { useHistory } from "react-router-dom";
 
-class Register extends Component {
-  constructor(props) {
-    super(props);
+const Register = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [rePassword, setRePassword] = useState("");
+  const context = useContext(UserContext);
+  const history = useHistory();
 
-    this.state = {
-      username: "",
-      password: "",
-      rePassword: "",
-    };
-  }
-
-  onChange = (event, type) => {
-    const newState = {};
-    newState[type] = event.target.value;
-
-    this.setState(newState);
+  const onChange = (event, type) => {
+    switch (type) {
+      case "username":
+        setUsername(event.target.value);
+        break;
+      case "password":
+        setPassword(event.target.value);
+        break;
+      case "rePassword":
+        setRePassword(event.target.value);
+        break;
+    }
   };
 
-  static contextType = UserContext;
-
-  handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const { username, password } = this.state;
 
     await authenticate(
       "http://localhost:9999/api/user/register",
@@ -40,8 +40,8 @@ class Register extends Component {
       },
       (user) => {
         console.log("Success");
-        this.context.logIn(user);
-        this.props.history.push("/");
+        context.logIn(user);
+        history.push("/");
       },
       (e) => {
         console.log("Error", e);
@@ -49,37 +49,34 @@ class Register extends Component {
     );
   };
 
-  render() {
-    const { username, password, rePassword } = this.state;
-    return (
-      <PageWrapper>
-        <form className={styles.container} onSubmit={this.handleSubmit}>
-          <Title title="Register" />
-          <Input
-            value={username}
-            onChange={(e) => this.onChange(e, "username")}
-            label="Username"
-            id="username"
-          />
-          <Input
-            type="password"
-            value={password}
-            onChange={(e) => this.onChange(e, "password")}
-            label="Password"
-            id="password"
-          />
-          <Input
-            type="password"
-            value={rePassword}
-            onChange={(e) => this.onChange(e, "rePassword")}
-            label="rePassword"
-            id="re-password"
-          />
-          <SubmitButton text="Register" />
-        </form>
-      </PageWrapper>
-    );
-  }
-}
+  return (
+    <PageWrapper>
+      <form className={styles.container} onSubmit={handleSubmit}>
+        <Title title="Register" />
+        <Input
+          value={username}
+          onChange={(e) => onChange(e, "username")}
+          label="Username"
+          id="username"
+        />
+        <Input
+          type="password"
+          value={password}
+          onChange={(e) => onChange(e, "password")}
+          label="Password"
+          id="password"
+        />
+        <Input
+          type="password"
+          value={rePassword}
+          onChange={(e) => onChange(e, "rePassword")}
+          label="rePassword"
+          id="re-password"
+        />
+        <SubmitButton text="Register" />
+      </form>
+    </PageWrapper>
+  );
+};
 
 export default Register;
